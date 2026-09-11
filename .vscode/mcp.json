@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "travel-weather": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["mcp_servers/weather_server.py"]
+    },
+    "travel-currency": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["mcp_servers/currency_server.py"]
+    }
+  }
+}
