@@ -1,11 +1,11 @@
 # AI Travel Planning Assistant
 
-A Python implementation of the AI Travel Planning Assistant assignment for Singapore. The application combines a Retrieval-Augmented Generation knowledge base with two MCP tools for weather and currency conversion.
+A Python implementation of the AI Travel Planning Assistant assignment for Singapore. The application combines a Retrieval-Augmented Generation knowledge base with two custom MCP tools for weather and currency conversion.
 
 ## What this project does
 
 - Answers destination questions about Singapore using RAG over public travel sources.
-- Uses MCP tools for current weather and currency conversion.
+- Uses custom MCP tools for live weather and currency conversion.
 - Produces combined answers when a prompt needs both stable destination facts and live data.
 - Retains conversation context across turns inside the Streamlit session.
 - Shows the source links used for knowledge-base facts and clearly labels MCP-derived data.
@@ -67,7 +67,13 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Set `GOOGLE_API_KEY` in `.env`.
+Set the following in `.env`:
+
+```env
+GOOGLE_API_KEY=your_key_here
+GOOGLE_MODEL=gemini-3.6-flash
+GOOGLE_EMBEDDING_MODEL=models/gemini-embedding-001
+```
 
 Important: keep real credentials only in `.env`. The `.env.example` file must contain placeholders only.
 
