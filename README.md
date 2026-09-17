@@ -149,3 +149,5 @@ docs/
 - Weather uses Open-Meteo and currency uses Frankfurter, both accessed through local MCP servers.
 - If `GOOGLE_API_KEY` is missing, the UI reports the setup problem instead of failing silently.
 - If Google AI Studio quota is exhausted, MCP-only questions still work, while RAG/LLM generation will fail until quota is available.
+
+[GitHub repository](https://github.com/Siddharth77/AI)
