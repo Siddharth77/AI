@@ -20,17 +20,20 @@ def get_assistant() -> TravelAssistant:
 
 def render_sidebar() -> None:
     st.sidebar.title("AI Travel Planning Assistant")
-    st.sidebar.caption("Assignment implementation for Singapore")
-    st.sidebar.markdown("### Coverage")
-    st.sidebar.markdown("- RAG over public Singapore travel content")
-    st.sidebar.markdown("- MCP weather tool")
-    st.sidebar.markdown("- MCP currency conversion tool")
-    st.sidebar.markdown("- Combined itinerary generation")
-    st.sidebar.markdown("### Starter prompts")
-    st.sidebar.markdown("- What are the must-visit attractions in Singapore?")
-    st.sidebar.markdown("- Suggest indoor attractions for a rainy day in Singapore.")
-    st.sidebar.markdown("- Convert INR 60000 to SGD.")
-    st.sidebar.markdown("- Create a three-day Singapore itinerary for next week and adjust it according to the weather forecast.")
+    st.sidebar.caption("Singapore travel guidance demo")
+    st.sidebar.markdown("### Included features")
+    st.sidebar.markdown("- RAG over Singapore travel content")
+    st.sidebar.markdown("- Live weather via MCP")
+    st.sidebar.markdown("- Live currency conversion via MCP")
+    st.sidebar.markdown("- Multi-turn travel planning chat")
+    st.sidebar.markdown("### Demo prompts")
+    for prompt in [
+        "What are the must-visit attractions in Singapore?",
+        "Suggest indoor attractions for a rainy day in Singapore.",
+        "Convert INR 60000 to SGD.",
+        "Create a three-day itinerary for Singapore and adjust it based on the weather forecast.",
+    ]:
+        st.sidebar.write(f"- {prompt}")
 
 
 def build_response_markdown(response: dict) -> str:
@@ -103,10 +106,7 @@ def main() -> None:
     render_sidebar()
 
     st.title("AI Travel Planning Assistant")
-    st.write(
-        "Plan a Singapore trip with grounded destination knowledge, live weather, "
-        "and currency conversion through MCP tools."
-    )
+    st.caption("A simple demo for a Singapore travel planner using LangChain + MCP + RAG")
 
     assistant = get_assistant()
 
@@ -115,25 +115,43 @@ def main() -> None:
             {
                 "role": "assistant",
                 "content": (
-                    "Ask about attractions, transport, cultural tips, indoor/outdoor activities, "
-                    "budget conversion, or a weather-aware itinerary for Singapore."
+                    "Ask about attractions, budget conversion, weather-aware planning, or a Singapore itinerary. "
+                    "Try one of the quick demo prompts below."
                 ),
             }
         ]
 
-    left_col, right_col = st.columns([4, 1])
-    with right_col:
-        if st.button("Rebuild knowledge base", use_container_width=True):
-            with st.spinner("Rebuilding Singapore knowledge base..."):
-                stats = assistant.ensure_knowledge_base(force_rebuild=True)
-            st.success(f"Knowledge base ready with {stats['chunk_count']} chunks from {stats['source_count']} sources.")
+    demo_prompts = [
+        "What are the must-visit attractions in Singapore?",
+        "Suggest indoor attractions for a rainy day in Singapore.",
+        "Convert INR 60000 to SGD.",
+        "Create a three-day itinerary for Singapore and adjust it based on the weather forecast.",
+    ]
+
+    st.markdown("### Quick demo prompts")
+    demo_cols = st.columns(len(demo_prompts))
+    for col, prompt in zip(demo_cols, demo_prompts):
+        if col.button(prompt, use_container_width=True):
+            st.session_state.pending_prompt = prompt
+
+    if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
+        user_prompt = st.session_state.pending_prompt
+        del st.session_state.pending_prompt
+    else:
+        user_prompt = st.chat_input("Ask a Singapore travel planning question")
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    user_prompt = st.chat_input("Ask a Singapore travel planning question")
     if not user_prompt:
+        if st.button("Rebuild knowledge base", use_container_width=False):
+            with st.spinner("Rebuilding Singapore knowledge base..."):
+                stats = assistant.ensure_knowledge_base(force_rebuild=True)
+            st.success(f"Knowledge base ready with {stats['chunk_count']} chunks from {stats['source_count']} sources.")
         return
 
     st.session_state.messages.append({"role": "user", "content": user_prompt})
